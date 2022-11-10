@@ -3,18 +3,18 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
-namespace Telegram.UpdateHandler1;
+namespace Telegram.UpdateHandler;
 
 public class UpdateHandler : IUpdateHandler
 {
     
     private readonly ITelegramBotClient _botClient;
-    //private readonly ILogger<UpdateHandler> _logger;
+    private readonly ILogger<UpdateHandler> _logger;
     
-    public UpdateHandler(ITelegramBotClient botClient/*, ILogger<UpdateHandler> logger*/)
+    public UpdateHandler(ITelegramBotClient botClient, ILogger<UpdateHandler> logger)
     {
         _botClient = botClient;
-        //_logger = logger;
+        _logger = logger;
     }
 
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -28,7 +28,7 @@ public class UpdateHandler : IUpdateHandler
 
         var chatId = message.Chat.Id;
 
-        Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+        _logger.LogInformation($"Received a '{messageText}' message in chat {chatId}.");
 
         // Echo received message text
         Message sentMessage = await botClient.SendTextMessageAsync(
@@ -39,13 +39,13 @@ public class UpdateHandler : IUpdateHandler
     
     public async Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        var ErrorMessage = exception switch
+        var errorMessage = exception switch
         {
             ApiRequestException apiRequestException => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
             _ => exception.ToString()
         };
 
-        //_logger.LogInformation("HandleError: {ErrorMessage}", ErrorMessage);
+        _logger.LogInformation("HandleError: {errorMessage}", errorMessage);
 
         // Cooldown in case of network connection error
         if (exception is RequestException)
