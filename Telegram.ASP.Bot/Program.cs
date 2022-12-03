@@ -1,3 +1,4 @@
+using System.Net.Security;
 using Microsoft.Extensions.Configuration;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -5,6 +6,9 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InputFiles;
 using Telegram.UpdateHandler;
+using Telegram.Lang;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 var botConfig = builder.Configuration.GetSection("BotConfig").Get<BotConfig>();
@@ -15,29 +19,36 @@ using var cancelTokenSource = new CancellationTokenSource();
 
 var receiverOptions = new ReceiverOptions()
 {
-    AllowedUpdates = new[] { UpdateType.Message },
+    AllowedUpdates = new[] { UpdateType.Message, UpdateType.InlineQuery, UpdateType.ChosenInlineResult, UpdateType.CallbackQuery },
     ThrowPendingUpdates = true
 };
 
 var updateHandler = new UpdateHandler(bot, new Logger<UpdateHandler>(LoggerFactory.Create(logger => logger.AddConsole())));
-
-/*bot.StartReceiving(
+//bot.DeleteWebhookAsync();
+bot.StartReceiving(
     updateHandler: updateHandler.HandleUpdateAsync,
     pollingErrorHandler: updateHandler.HandlePollingErrorAsync,
     receiverOptions: receiverOptions,
+    cancellationToken: cancelTokenSource.Token);
+
+new Text();
+
+//app.Map("/", () => "Hello there");
+//app.Map("/hello", () => "Hi");
+
+
+/*await bot.SetWebhookAsync(
+    url: $"https://67e7-213-87-154-147.eu.ngrok.io/bot/{botConfig.BotToken}",
+    certificate: new InputFileStream( new FileStream("C:\\Users\\undefinedev\\Desktop\\keys\\testsslt.pem", FileMode.Open)),
+    allowedUpdates: new[] { UpdateType.Message },
     cancellationToken: cancelTokenSource.Token);*/
 
-await bot.SetWebhookAsync(
-    url: $"https://176.124.170.112:8443/bot/{botConfig.BotToken}",
-    certificate: new InputFileStream( new FileStream("C:\\Users\\alexa\\Desktop\\key\\testssl1.pem", FileMode.Open)),
-    allowedUpdates: new[] { UpdateType.Message },
-    cancellationToken: cancelTokenSource.Token);
 
 
 app.Run();
 
 Console.ReadLine();
-await bot.DeleteWebhookAsync(cancellationToken: cancelTokenSource.Token);
+
 
 
 
