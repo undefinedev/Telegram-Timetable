@@ -1,4 +1,5 @@
 using System.Net.Security;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -7,6 +8,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InputFiles;
 using Telegram.UpdateHandler;
 using Telegram.Lang;
+using Telegram.DB;
 
 
 
@@ -23,6 +25,11 @@ var receiverOptions = new ReceiverOptions()
     ThrowPendingUpdates = true
 };
 
+new Text();
+var db = new TelegramDB();
+db.Database.EnsureDeleted();
+db.Database.EnsureCreated();
+
 var updateHandler = new UpdateHandler(bot, new Logger<UpdateHandler>(LoggerFactory.Create(logger => logger.AddConsole())));
 //bot.DeleteWebhookAsync();
 bot.StartReceiving(
@@ -31,7 +38,7 @@ bot.StartReceiving(
     receiverOptions: receiverOptions,
     cancellationToken: cancelTokenSource.Token);
 
-new Text();
+
 
 //app.Map("/", () => "Hello there");
 //app.Map("/hello", () => "Hi");

@@ -1,8 +1,8 @@
 {
-  "Welcome" : 
+  "Welcome" :
   {
-    "en" : "",
-    "ru" : "Добро пожаловать в систему электронной записи"
+    "en" : "Welcome to the digital recording system",
+    "ru" : "Добро пожаловать в цифровую систему записи"
   },
   "Error" :
   {
@@ -13,5 +13,80 @@
   {
     "en" : "Success",
     "ru" : "Успешно"
+  },
+  "Account" :
+  {
+    "en" : "Account",
+    "ru" : "Аккаунт"
+  },
+  "Help" :
+  {
+    "en" : "If you want to become a specialist and for other help text @undefinedev",
+    "ru" : "Если хотите стать специалистом или нужна помощь, пишите @undefinedev"
+  },
+  "HelpButton" :
+  {
+    "en" : "Help",
+    "ru" : "Помощь"
+  },
+  "History" :
+  {
+    "en" : "Record history",
+    "ru" : "История записей"
+  },
+  "Name" :
+  {
+    "en" : "Name",
+    "ru" : "Имя"
+  },
+  "Language" :
+  {
+    "en" : "Change language",
+    "ru" : "Сменить язык"
+  },
+  "Spec" :
+  {
+    "en" : "Specialist",
+    "ru" : "Специалист"
+  },
+  "FeedbackUser" :
+  {
+    "en" : "Your feedback",
+    "ru" : "Ваша оценка"
+  },
+  "FeedbackSpec" :
+  {
+    "en" : "Feedback",
+    "ru" : "Оценка"
+  },
+  "HistoryEmpty" :
+  {
+    "en" : "Your history is empty",
+    "ru" : "Ваша история пуста"
+  },
+  "SpecialistsEmpty" :
+  {
+    "en" : "We don`t have any available specialists",
+    "ru" : "У нас нет свободных специалистов"
+  },
+  "Back" :
+  {
+    "en" : "Back",
+    "ru" : "Назад"
+  },
+  "NumberOfOrders" :
+  {
+    "en" : "Number of records",
+    "ru" : "Число записей"
+  },
+  "NumberCompletedOrders" :
+  {
+    "en" : "Completed",
+    "ru" : "Выполнено"
+  },
+  "NewRecord" :
+  {
+    "en" : "Make appointment",
+    "ru" : "Записаться"
   }
 }
