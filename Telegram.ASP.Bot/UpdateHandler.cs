@@ -125,27 +125,17 @@ public class UpdateHandler : IUpdateHandler
 
         static async Task<Message> AccountInfo(ITelegramBotClient botClient, Message message, TelegramDB.User user, CancellationToken cancellationToken)
         {
-            InlineKeyboardMarkup keyboard = new(new[]
-            {
-                InlineKeyboardButton.WithCallbackData(text: $"\U0001F9FE {Text.History[user.Language]}", callbackData: "History"),
-                InlineKeyboardButton.WithCallbackData(text: $"\U0001F5C8 {Text.NewRecord[user.Language]}", callbackData: "NewRecord") 
-            });
-            var text = $"{Text.Name[user.Language]}: {message.From!.FirstName}\n" +
-                       $"{Text.NumberOfOrders[user.Language]}: {user.History.Count}\n";
-            if (user.Role <= 2)
-            {
-                text += $"{Text.NumberCompletedOrders[user.Language]}: {user.HistorySpec.Count}";
-            }
+            var acc = AccountHandler(message.From!, user);
             return await botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: text,
-                replyMarkup: keyboard,
+                text: acc.Key,
+                replyMarkup: acc.Value,
                 cancellationToken: cancellationToken);
         }
 
         static async Task<Message> SendSpecialists(ITelegramBotClient botClient, Message message, TelegramDB.User user, CancellationToken cancellationToken)
         {
-            var res = SpecialistsHandler(message, user);
+            var res = SpecialistsHandler(message.From!, user);
             InlineKeyboardMarkup keyboard = new(res.Value);
             return await botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
@@ -288,14 +278,14 @@ public class UpdateHandler : IUpdateHandler
                 history = $"\U0001F61E {Text.HistoryEmpty[user.Language]}";
                 keyboard = new InlineKeyboardMarkup(new[]
                 {
-                    InlineKeyboardButton.WithCallbackData(text: $"\U000023F4{Text.Back[user.Language]}", callbackData: "backAcc")
+                    InlineKeyboardButton.WithCallbackData(text: $"\U000025C0{Text.Back[user.Language]}", callbackData: "backAcc")
                 });
             }
             else
             {
                 keyboard = new InlineKeyboardMarkup(new[]
                 {
-                    InlineKeyboardButton.WithCallbackData(text: $"\U000023F4 {Text.Back[user.Language]}", callbackData: "backAcc")
+                    InlineKeyboardButton.WithCallbackData(text: $"\U000025C0{Text.Back[user.Language]}", callbackData: "backAcc")
                 });
             }
             return await botClient.EditMessageTextAsync(
@@ -308,28 +298,18 @@ public class UpdateHandler : IUpdateHandler
         
         static async Task<Message> AccountInfo(ITelegramBotClient botClient, CallbackQuery message, TelegramDB.User user, CancellationToken cancellationToken)
         {
-            InlineKeyboardMarkup keyboard = new(new[]
-            {
-                InlineKeyboardButton.WithCallbackData(text: $"\U0001F9FE {Text.History[user.Language]}", callbackData: "History"),
-                InlineKeyboardButton.WithCallbackData(text: $"\U0001F5C8 {Text.NewRecord[user.Language]}", callbackData: "NewRecord")
-            });
-            var text = $"{Text.Name[user.Language]}: {message.From!.FirstName}\n" +
-                       $"{Text.NumberOfOrders[user.Language]}: {user.History.Count}\n";
-            if (user.Role <= 2)
-            {
-                text += $"{Text.NumberCompletedOrders[user.Language]}: {user.HistorySpec.Count}";
-            }
+            var acc = AccountHandler(message.From, user);
             return await botClient.EditMessageTextAsync(
                 chatId: message.From.Id,
                 messageId: message.Message!.MessageId,
-                text: text,
-                replyMarkup: keyboard,
+                text: acc.Key,
+                replyMarkup: acc.Value,
                 cancellationToken: cancellationToken);
         }
         
         static async Task<Message> SendSpecialists(ITelegramBotClient botClient, CallbackQuery message, TelegramDB.User user, CancellationToken cancellationToken)
         {
-            var res = SpecialistsHandler(message.Message!, user);
+            var res = SpecialistsHandler(message.From, user);
             InlineKeyboardMarkup keyboard = new(res.Value);
             return await botClient.EditMessageTextAsync(
                 chatId: message.From.Id,
@@ -417,7 +397,7 @@ public class UpdateHandler : IUpdateHandler
             cancellationToken: cancellationToken);*/
     }
 
-    private static KeyValuePair<string, List<InlineKeyboardButton>> SpecialistsHandler(Message message, TelegramDB.User user)
+    private static KeyValuePair<string, List<InlineKeyboardButton>> SpecialistsHandler(User userTelegram, TelegramDB.User user)
     {
         var db = new TelegramDB();
         var text = "";
@@ -425,7 +405,7 @@ public class UpdateHandler : IUpdateHandler
         var buttons = new List<InlineKeyboardButton>();
         foreach (var spec in db.Specialists)
         {
-            if (spec.Work && spec.SpecialistId != message.From!.Id)
+            if (spec.Work && spec.SpecialistId != userTelegram.Id)
             {
                 text += $"{Text.Specialist[lang]}: {spec.DisplayName}\n{Text.FeedbackSpec[lang]}" +
                         $"{string.Concat(Enumerable.Repeat("\U00002B50", (int)Math.Round(spec.MeanFeedback.GetValueOrDefault())))}" +
@@ -438,8 +418,34 @@ public class UpdateHandler : IUpdateHandler
         {
             text = $"\U0001F61E {Text.SpecialistsEmpty[user.Language]}";
         } 
-        buttons.Add(InlineKeyboardButton.WithCallbackData(text: $"\U000023F4{Text.Back[user.Language]}", callbackData: "backAcc"));
+        buttons.Add(InlineKeyboardButton.WithCallbackData(text: $"\U000025C0{Text.Back[user.Language]}", callbackData: "backAcc"));
         return new KeyValuePair<string, List<InlineKeyboardButton>>(text, buttons);
+    }
+
+    private static KeyValuePair<string, InlineKeyboardMarkup> AccountHandler(User userTelegram, TelegramDB.User user)
+    {
+        InlineKeyboardMarkup keyboard = new(
+            new[]
+            {
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData(text: $"\U0001F9FE {Text.History[user.Language]}",
+                        callbackData: "History")
+                },
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData(text: $"\U0001F5C8 {Text.NewRecord[user.Language]}",
+                        callbackData: "NewRecord")
+                }
+            });
+        var text = $"{Text.Name[user.Language]}: {userTelegram.FirstName}\n" +
+                   $"{Text.NumberOfOrders[user.Language]}: {user.History.Count}\n";
+        if (user.Role <= 2)
+        {
+            text += $"{Text.NumberCompletedOrders[user.Language]}: {user.HistorySpec.Count}";
+        }
+
+        return new KeyValuePair<string, InlineKeyboardMarkup>(text, keyboard);
     }
 
 
