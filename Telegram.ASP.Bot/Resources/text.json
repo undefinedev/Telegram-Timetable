@@ -6,8 +6,8 @@
   },
   "Error" :
   {
-    "en" : "There are no need to text messages. Use keyboard",
-    "ru" : "Нет необходимости вводить текстовые команды. Используйте клавиатуру"
+    "en" : "Unexpected error",
+    "ru" : "Неизвестная ошибка"
   },
   "Success" :
   {
@@ -79,14 +79,94 @@
     "en" : "Number of records",
     "ru" : "Число записей"
   },
-  "NumberCompletedOrders" :
+  "NumberSpecOrders" :
   {
-    "en" : "Completed",
-    "ru" : "Выполнено"
+    "en" : "Number of orders from users",
+    "ru" : "Число заказов от пользователей"
   },
   "NewRecord" :
   {
     "en" : "Make appointment",
     "ru" : "Записаться"
+  },
+  "RecordWarning" :
+  {
+    "en" : "This is a day off, the past day, or the wrong button at all",
+    "ru" : "Это выходной, уже прошедший день, либо вообще неправильная кнопка"
+  },
+  "DateChoose" :
+  {
+    "en" : "Choose a date other than Sunday and past days",
+    "ru" : "Выберите дату помимо воскресенья и прошедших дней"
+  },
+  "WorkStatus" :
+  {
+    "en" : "Accepting new orders",
+    "ru" : "Прием новых записей"
+  },
+  "TimeChoose" :
+  {
+    "en" : "Choose time",
+    "ru" : "Выберите время"
+  },
+  "Confirm" :
+  {
+    "en" : "Confirm",
+    "ru" : "Подтвердить"
+  },
+  "Decline" :
+  {
+    "en" : "Decline",
+    "ru" : "Отменить"
+  },
+  "ConfirmText" :
+  {
+    "en" : "Confirm your order",
+    "ru" : "Подтвердите запись"
+  },
+  "Rating" :
+  {
+    "en" : "Rating",
+    "ru" : "Рейтинг"
+  },
+  "Holidays" :
+  {
+    "en" : "Hols",
+    "ru" : "Вых"
+  },
+  "Days" :
+  {
+    "en" : "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+    "ru" : "Пн,Вт,Ср,Чт,Пт,Сб,Вс"
+  },
+  "FutureOrd" :
+  {
+    "en" : "Planned records",
+    "ru" : "Запланированные записи"
+  },
+  "SpecOrders" :
+  {
+    "en" : "Client records",
+    "ru" : "Записи клиентов"
+  },
+  "Completed" :
+  {
+    "en" : "Completed",
+    "ru" : "Завершённых"
+  },
+  "Rate" :
+  {
+    "en" : "Rate",
+    "ru" : "Оценить"
+  },
+  "RateThanks" :
+  {
+    "en" : "Thank you for your responsiveness",
+    "ru" : "Спасибо за отзывчивость"
+  },
+  "RateNotification" :
+  {
+    "en" : "Rate our work please",
+    "ru" : "Оцените нашу работу, пожалуйста"
   }
 }

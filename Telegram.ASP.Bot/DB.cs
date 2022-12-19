@@ -7,7 +7,7 @@ public partial class TelegramDB : DbContext
 {
     public virtual DbSet<User> Users { get; set; } = null!;
     public virtual DbSet<Record> Records { get; set; } = null!;
-    public virtual DbSet<Record> FutureRecords { get; set; } = null!;
+    public virtual DbSet<FutureRecord> FutureRecords { get; set; } = null!;
     public virtual DbSet<Specialist> Specialists { get; set; } = null!;
 
 
@@ -15,6 +15,7 @@ public partial class TelegramDB : DbContext
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long TelegramId { get; set; }
+
         public string TelegramName { get; set; }
         public string Language { get; set; }
         public virtual Specialist? Specialist { get; set; }
@@ -37,6 +38,18 @@ public partial class TelegramDB : DbContext
         }
     }
 
+    public partial class FutureRecord
+    {
+        public int FutureRecordId { get; set; }
+        public int RecordId { get; set; }
+        public virtual Record Record { get; set; } = null!;
+
+        public FutureRecord(int recordId)
+        {
+            RecordId = recordId;
+        }
+    }
+
     public partial class Record
     {
         public int RecordId { get; set; }
@@ -46,11 +59,10 @@ public partial class TelegramDB : DbContext
         public int? Feedback { get; set; }
         public virtual User User { get; set; } = null!;
         public virtual User Spec { get; set; } = null!;
+        public virtual FutureRecord? FutureRecord { get; set; }
 
-        
-        public Record(int recordId, long userId, long specId, DateTime date, int? feedback)
+        public Record(long userId, long specId, DateTime date, int? feedback)
         {
-            RecordId = recordId;
             UserId = userId;
             SpecId = specId;
             Date = date;
@@ -62,24 +74,36 @@ public partial class TelegramDB : DbContext
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long SpecialistId { get; set; }
+
         public string? DisplayName { get; set; }
         public bool Work { get; set; }
         public float? MeanFeedback { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+        public TimeSpan Start { get; set; }
+        public TimeSpan End { get; set; }
         public int Interval { get; set; }
         public virtual User SpecProfile { get; set; } = null!;
-    }
 
-    /*public TelegramDB()
-    {
-        Database.EnsureDeleted();
-        Database.EnsureCreated();
-    }*/
+
+        public Specialist()
+        {
+        }
+
+        public Specialist(long id, string? name, TimeSpan start, TimeSpan end, int interval)
+        {
+            SpecialistId = id;
+            DisplayName = name;
+            Start = start;
+            End = end;
+            Interval = interval;
+            Work = false;
+        }
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseLazyLoadingProxies().UseSqlServer("Server=localhost;Database=Telegram;TrustServerCertificate=True;User=sa;Password=adminRELease_15");
+        optionsBuilder.UseLazyLoadingProxies()
+            .UseSqlServer("Server=localhost;Database=Telegram;TrustServerCertificate=True;" +
+                          "User=sa;Password=adminRELease_15;MultipleActiveResultSets=true");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -92,17 +116,14 @@ public partial class TelegramDB : DbContext
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Record_Users_UserTelegramId");
-            
+
             entity.HasOne(r => r.Spec).WithMany(u => u.HistorySpec)
                 .HasForeignKey(r => r.SpecId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Record_Users_SpecTelegramId");
         });
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(u => u.TelegramId).HasName("PK_Users");
-        });
+        modelBuilder.Entity<User>(entity => { entity.HasKey(u => u.TelegramId).HasName("PK_Users"); });
 
         modelBuilder.Entity<Specialist>(entity =>
         {
@@ -113,5 +134,29 @@ public partial class TelegramDB : DbContext
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_Spec_User");
         });
+
+        modelBuilder.Entity<FutureRecord>(entity =>
+        {
+            entity.HasKey(r => r.FutureRecordId).HasName("PK_FutRec");
+
+            entity.HasOne(f => f.Record).WithOne(u => u.FutureRecord)
+                .HasForeignKey<FutureRecord>(f => f.RecordId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FutRec_Rec");
+        });
+    }
+
+    public void CheckTime(ref List<int> toDelete)
+    {
+        foreach (var record in FutureRecords)
+        {
+            if (DateTime.Now > record.Record.Date.AddMinutes(60))
+            {
+                toDelete.Add(record.RecordId);
+                FutureRecords.Remove(record);
+            }
+
+            Thread.Sleep(5000);
+        }
     }
 }
