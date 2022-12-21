@@ -20,7 +20,7 @@ var logger = new Logger<UpdateHandler>(LoggerFactory.Create(logger => logger.Add
 using var cancelTokenSource = new CancellationTokenSource();
 var cancelToken = cancelTokenSource.Token;
 
-var receiverOptions = new ReceiverOptions()
+var receiverOptions = new ReceiverOptions
 {
     AllowedUpdates = new[]
         { UpdateType.Message, UpdateType.InlineQuery, UpdateType.ChosenInlineResult, UpdateType.CallbackQuery },

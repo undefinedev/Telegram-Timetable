@@ -41,8 +41,7 @@ class Text
     public static Dictionary<string, string> RateNotification { get; } = new();
 
     public static readonly List<string> SupportedLanguages = new() { "en", "ru" };
-
-    //private static readonly List<string> Phrases = new() { "Welcome", "Error", "Success"};
+    
     private static readonly Dictionary<string, Dictionary<string, string>> Phrases = new()
     {
         { "Welcome", Welcome }, { "Error", Error }, { "Success", Success }, { "Account", Account }, { "Help", Help },
